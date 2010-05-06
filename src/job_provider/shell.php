@@ -78,7 +78,7 @@ class ShellJobProvider implements JobProvider
         $command = array_pop( $this->shellCmds );
         return function() use ( $command )
         {
-            shell_exec( $command );
+            return shell_exec( $command );
         };
     }
 }

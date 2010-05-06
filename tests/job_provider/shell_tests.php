@@ -40,10 +40,30 @@ class ShellTests extends \PHPUnit_Framework_TestCase
 		return new \PHPUnit_Framework_TestSuite( __CLASS__ );
 	}
 
-    public function testGetName()
+    public function testNoJobs()
     {
         $provider = new \njq\ShellJobProvider( array() );
         $this->assertFalse( $provider->hasJobs() );
+    }
+
+    public function testGetSingleJob()
+    {
+        $provider = new \njq\ShellJobProvider( array( 'echo 1' ) );
+        $this->assertTrue( $provider->hasJobs() );
+
+        $job = $provider->getNextJob();
+
+        $this->assertFalse( $provider->hasJobs() );
+    }
+
+    public function testExecuteShellJob()
+    {
+        $provider = new \njq\ShellJobProvider( array( 'echo "Hello world!"' ) );
+        $job = $provider->getNextJob();
+        $this->assertSame(
+            "Hello world!\n",
+            call_user_func( $job )
+        );
     }
 }
 
