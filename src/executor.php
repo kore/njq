@@ -26,7 +26,12 @@
 namespace njq;
 
 /*
- * VCS wrapper abstracted log entry
+ * Executor class for job queue
+ *
+ * Executes all jobs provided by a job provider. Forks multiple process to 
+ * execute multiple jobs in the background.
+ *
+ * Requires the PCNTL extension.
  */
 class Executor
 {

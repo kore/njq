@@ -23,33 +23,9 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  */
 
-namespace njq;
-
 /*
- * Interface for job providers.
- *
- * Implements the methods, which are required for job providers.
+ * Includes all classes, which are required to use the Native PHP job queue.
  */
-interface JobProvider
-{
-    /**
-     * Returns if the job provider has more jobs.
-     *
-     * Returns true, if there are more jobs available in the job provider and 
-     * false, if the ally have been executed already.
-     * 
-     * @return bool
-     */
-    public function hasJobs();
-
-    /**
-     * Get next job from job provider
-     *
-     * Get the next job from the job provider. Should return a valid callback, 
-     * which will then be called in the forked child.
-     * 
-     * @return Callback
-     */
-    public function getNextJob();
-}
+require __DIR__ . '/executor.php';
+require __DIR__ . '/job_provider.php';
 
