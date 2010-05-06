@@ -1,0 +1,81 @@
+<?php
+/**
+ * Native PHP job queue
+ *
+ * This file is part of njq.
+ *
+ * njq is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; version 3 of the License.
+ *
+ * njq is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with njq; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @package VCSWrapper
+ * @subpackage Core
+ * @version $Revision: 954 $
+ * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
+ */
+
+namespace njq;
+
+/*
+ * VCS wrapper abstracted log entry
+ */
+class Executor
+{
+    /**
+     * Run jobs
+     *
+     * Run all jobs provided by the job provider.
+     *
+     * Jobs are run parallel in the background. The number of jobs executed in 
+     * parallel can be specified as the second parameter.
+     *
+     * Returns once all jobs have been executed.
+     * 
+     * @param JobProvider $jobs 
+     * @param int $parallel 
+     * @return void
+     */
+    public function run( JobProvider $jobs, $parallel = 4 )
+    {
+        $forks = array();
+        while ( $jobs->hasJobs() )
+        {
+            $job = $jobs->getNextJob();
+
+            if ( count( $forks ) < $parallel )
+            {
+                if ( ( $forks[] = pcntl_fork() ) === 0 )
+                {
+                    // We are the newly forked child, just execute the job
+                    call_user_func( $job );
+                    exit( 0 );
+                }
+            }
+
+            do {
+                // Check if the registered jobs are still alive
+                foreach ( $forks as $nr => $pid )
+                {
+                    if ( $pid === pcntl_waitpid( $pid, $status, WNOHANG ) )
+                    {
+                        // Job has finished
+                        unset( $forks[$nr] );
+                    }
+                }
+
+                // Sleep a bit, to not overload with the angel process
+                usleep( 100 * 1000 );
+            } while ( count( $forks ) >= $parallel );
+        }
+    }
+}
+
