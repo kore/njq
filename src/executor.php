@@ -68,13 +68,11 @@ class Executor
 
             do {
                 // Check if the registered jobs are still alive
-                foreach ( $forks as $nr => $pid )
+                if ( $pid = pcntl_wait( $status ) )
                 {
-                    if ( $pid === pcntl_wait( $status ) )
-                    {
-                        // Job has finished
-                        unset( $forks[$nr] );
-                    }
+                    // Job has finished
+                    $jobId = array_search( $pid, $forks );
+                    unset( $forks[$jobId] );
                 }
 
                 // Sleep a bit, to not overload with the angel process
