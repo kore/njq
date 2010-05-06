@@ -28,4 +28,5 @@
  */
 require __DIR__ . '/executor.php';
 require __DIR__ . '/job_provider.php';
+require __DIR__ . '/job_provider/shell.php';
 
