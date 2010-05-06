@@ -46,6 +46,12 @@ class ShellTests extends \PHPUnit_Framework_TestCase
         $this->assertFalse( $provider->hasJobs() );
     }
 
+    public function testNoJobsGetJob()
+    {
+        $provider = new \njq\ShellJobProvider( array() );
+        $this->assertNull( $provider->getNextJob() );
+    }
+
     public function testGetSingleJob()
     {
         $provider = new \njq\ShellJobProvider( array( 'echo 1' ) );

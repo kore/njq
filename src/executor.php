@@ -54,9 +54,9 @@ class Executor
         $forks = array();
         while ( $jobs->hasJobs() )
         {
-            $job = $jobs->getNextJob();
 
-            if ( count( $forks ) < $parallel )
+            while ( ( count( $forks ) < $parallel ) &&
+                    ( $job = $jobs->getNextJob() ) )
             {
                 if ( ( $forks[] = pcntl_fork() ) === 0 )
                 {
@@ -70,7 +70,7 @@ class Executor
                 // Check if the registered jobs are still alive
                 foreach ( $forks as $nr => $pid )
                 {
-                    if ( $pid === pcntl_waitpid( $pid, $status, WNOHANG ) )
+                    if ( $pid === pcntl_wait( $status ) )
                     {
                         // Job has finished
                         unset( $forks[$nr] );

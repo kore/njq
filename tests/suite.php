@@ -31,6 +31,7 @@ require dirname( __FILE__ ) . '/../src/environment.php';
  * Require test suites.
  */
 require 'job_provider_suite.php';
+require 'executor_suite.php';
 
 /**
 * Main test suite
@@ -48,6 +49,7 @@ class Suite extends \PHPUnit_Framework_TestSuite
         $this->setName( 'Native Job queue' );
 
         $this->addTestSuite( \njq\Tests\JobProvider\Suite::suite() );
+        $this->addTestSuite( \njq\Tests\Executor\Suite::suite() );
     }
 
     /**

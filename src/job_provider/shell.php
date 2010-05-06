@@ -70,12 +70,20 @@ class ShellJobProvider implements JobProvider
      *
      * Get the next job from the job provider. Should return a valid callback, 
      * which will then be called in the forked child.
+     *
+     * Returns null, if no job is available anymore.
      * 
      * @return Callback
      */
     public function getNextJob()
     {
         $command = array_pop( $this->shellCmds );
+
+        if ( $command === null )
+        {
+            return null;
+        }
+
         return function() use ( $command )
         {
             return shell_exec( $command );

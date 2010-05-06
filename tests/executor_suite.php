@@ -23,35 +23,38 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  */
 
-namespace njq;
+namespace njq\Tests\Executor;
 
-/*
- * Interface for job providers.
- *
- * Implements the methods, which are required for job providers.
+/**
+ * Framework tests
  */
-interface JobProvider
+require 'executor/base_tests.php';
+
+/**
+* Executor test suite
+*/
+class Suite extends \PHPUnit_Framework_TestSuite
 {
     /**
-     * Returns if the job provider has more jobs.
-     *
-     * Returns true, if there are more jobs available in the job provider and 
-     * false, if the ally have been executed already.
+     * Basic constructor for test suite
      * 
-     * @return bool
+     * @return void
      */
-    public function hasJobs();
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setName( 'Shell job executor' );
+
+        $this->addTest( BaseTests::suite() );
+    }
 
     /**
-     * Get next job from job provider
-     *
-     * Get the next job from the job provider. Should return a valid callback, 
-     * which will then be called in the forked child.
-     *
-     * Returns null, if no job is available anymore.
+     * Return test suite
      * 
-     * @return Callback
+     * @return prpTestSuite
      */
-    public function getNextJob();
+    public static function suite()
+    {
+        return new Suite( __CLASS__ );
+    }
 }
-
