@@ -52,7 +52,8 @@ class Executor
     public function run( JobProvider $jobs, $parallel = 4 )
     {
         $forks = array();
-        while ( $jobs->hasJobs() )
+        while ( $jobs->hasJobs() ||
+                count( $forks ) )
         {
 
             while ( ( count( $forks ) < $parallel ) &&
@@ -74,9 +75,6 @@ class Executor
                     $jobId = array_search( $pid, $forks );
                     unset( $forks[$jobId] );
                 }
-
-                // Sleep a bit, to not overload with the angel process
-                usleep( 100 * 1000 );
             } while ( count( $forks ) >= $parallel );
         }
     }
