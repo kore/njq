@@ -144,7 +144,7 @@ class ShellLogger implements Logger
     {
         $timePassed       = microtime( true ) - $this->started;
         $percentCompleted = $nr / $this->count;
-        $secondsRequired  = $timePassed / $percentCompleted;
+        $secondsRequired  = $timePassed / $percentCompleted * ( 1 - $percentCompleted );
 
         return sprintf( 'ETA: % 2d.%02dm',
             floor( $secondsRequired / 60 ),
