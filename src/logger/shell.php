@@ -48,6 +48,20 @@ class ShellLogger implements Logger
     protected $stream;
 
     /**
+     * Print ETA
+     * 
+     * @var bool
+     */
+    protected $printEta;
+
+    /**
+     * Starting time of the executor
+     * 
+     * @var float
+     */
+    protected $started;
+
+    /**
      * Visual process indicators
      * 
      * @var array
@@ -62,9 +76,10 @@ class ShellLogger implements Logger
      * @param resource $output 
      * @return void
      */
-    public function __construct( $output = STDERR )
+    public function __construct( $output = STDERR, $printEta = false )
     {
-        $this->stream = $output;
+        $this->stream   = $output;
+        $this->printEta = (bool) $printEta;
     }
 
     /**
@@ -79,6 +94,8 @@ class ShellLogger implements Logger
         {
             $this->count = count( $jobProvider );
         }
+
+        $this->started = microtime( true );
     }
 
     /**
@@ -100,11 +117,12 @@ class ShellLogger implements Logger
     {
         if ( $this->count )
         {
-            \fwrite( $this->stream, \sprintf( "   \r% 4d / %d (% 2.2F%%) %s   ",
+            \fwrite( $this->stream, \sprintf( "   \r% 4d / %d (% 2.2F%%) %s %s  ",
                 $nr,
                 $this->count,
                 $nr / $this->count * 100,
-                $this->processIndicators[$nr % count( $this->processIndicators )]
+                $this->processIndicators[$nr % count( $this->processIndicators )],
+                ( !$this->printEta ? '' : $this->getEta( $nr ) )
             ) );
         }
         else
@@ -114,6 +132,24 @@ class ShellLogger implements Logger
                 $this->processIndicators[$nr % count( $this->processIndicators )]
             ) );
         }
+    }
+
+    /**
+     * Return nicely formatted ETA
+     * 
+     * @param int $nr 
+     * @return string
+     */
+    protected function getEta( $nr )
+    {
+        $timePassed       = microtime( true ) - $this->started;
+        $percentCompleted = $nr / $this->count;
+        $secondsRequired  = $timePassed / $percentCompleted;
+
+        return sprintf( 'ETA: % 2d.%02dm',
+            floor( $secondsRequired / 60 ),
+            $secondsRequired % 60
+        );
     }
 }
 
