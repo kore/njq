@@ -45,6 +45,35 @@ The ``4`` (second parameter of ``\njq\Executor::run``) defines the number of
 parallel processes to spawn. This should not exceed the number of available
 cores in the most cases.
 
+Logger
+======
+
+To view the state of the executor you can specify a logger, which then can echo
+the current progress. A logger needs to implement the ``\njq\Logger`` interface
+and is passed to the constructor of the executor. If no logger is specified a
+blind dummy logger will be used. To use the shell logger, echoing the state to
+STDERR, use::
+
+    <?php
+
+    require 'njq/environment.php';
+
+    $executor = new \njq\Executor( new \njq\ShellLogger() );
+    $executor->run(
+        new \njq\ShellJobProvider( array(
+            // ...
+        ) ),
+        4
+    );
+
+It will then print a status like the following, if the ``JobProvider``
+implements the ``Countable`` interface::
+
+      56 / 5880 (0.95%) |
+
+If the ``JobProvider`` does not implement the ``Countable`` interface the
+percent indicator obviously cannot be displayed.
+
 Requirements
 ============
 
