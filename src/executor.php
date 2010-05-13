@@ -36,6 +36,26 @@ namespace njq;
 class Executor
 {
     /**
+     * Logger used to log the execution
+     * 
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
+     * Construct from logger
+     *
+     * Defaults to a dummy logger, which does nothing
+     * 
+     * @param Logger $logger 
+     * @return void
+     */
+    public function __construct( Logger $logger = null )
+    {
+        $this->logger = $logger === null ? new DummyLogger() : $logger;
+    }
+
+    /**
      * Run jobs
      *
      * Run all jobs provided by the job provider.
@@ -51,7 +71,10 @@ class Executor
      */
     public function run( JobProvider $jobs, $parallel = 4 )
     {
+        $this->logger->startExecutor( $this, $jobs );
+
         $forks = array();
+        $jobNr = 0;
         while ( $jobs->hasJobs() ||
                 count( $forks ) )
         {
@@ -59,6 +82,7 @@ class Executor
             while ( ( count( $forks ) < $parallel ) &&
                     ( $job = $jobs->getNextJob() ) )
             {
+                $this->logger->progressJob( ++$jobNr );
                 if ( ( $forks[] = pcntl_fork() ) === 0 )
                 {
                     // We are the newly forked child, just execute the job
@@ -77,6 +101,8 @@ class Executor
                 }
             } while ( count( $forks ) >= $parallel );
         }
+
+        $this->logger->finishedExecutor();
     }
 }
 

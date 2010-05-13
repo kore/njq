@@ -31,7 +31,7 @@ namespace njq;
  * Constructed from an array of shell commands, it returns those, to all be 
  * executed.
  */
-class ShellJobProvider implements JobProvider
+class ShellJobProvider implements JobProvider, \Countable
 {
     /**
      * Array of shell commands, which are provided by this job provider and 
@@ -88,6 +88,16 @@ class ShellJobProvider implements JobProvider
         {
             return shell_exec( $command );
         };
+    }
+
+    /**
+     * Return numer of shell commands
+     * 
+     * @return int
+     */
+    public function count()
+    {
+        return count( $this->shellCmds );
     }
 }
 

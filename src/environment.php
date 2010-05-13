@@ -26,6 +26,9 @@
 /*
  * Includes all classes, which are required to use the Native PHP job queue.
  */
+require __DIR__ . '/logger.php';
+require __DIR__ . '/logger/dummy.php';
+require __DIR__ . '/logger/shell.php';
 require __DIR__ . '/executor.php';
 require __DIR__ . '/job_provider.php';
 require __DIR__ . '/job_provider/shell.php';

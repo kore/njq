@@ -23,19 +23,15 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  */
 
-namespace njq\Tests;
-
-require dirname( __FILE__ ) . '/../src/environment.php';
-
-/*
- * Require test suites.
- */
-require 'job_provider_suite.php';
-require 'executor_suite.php';
-require 'logger_suite.php';
+namespace njq\Tests\Logger;
 
 /**
-* Main test suite
+ * Framework tests
+ */
+require 'logger/shell_tests.php';
+
+/**
+* Executor test suite
 */
 class Suite extends \PHPUnit_Framework_TestSuite
 {
@@ -47,11 +43,9 @@ class Suite extends \PHPUnit_Framework_TestSuite
     public function __construct()
     {
         parent::__construct();
-        $this->setName( 'Native Job queue' );
+        $this->setName( 'Shell job logger' );
 
-        $this->addTestSuite( \njq\Tests\JobProvider\Suite::suite() );
-        $this->addTestSuite( \njq\Tests\Executor\Suite::suite() );
-        $this->addTestSuite( \njq\Tests\Logger\Suite::suite() );
+        $this->addTest( ShellTests::suite() );
     }
 
     /**

@@ -23,44 +23,45 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  */
 
-namespace njq\Tests;
-
-require dirname( __FILE__ ) . '/../src/environment.php';
+namespace njq;
 
 /*
- * Require test suites.
+ * CLI logger
+ *
+ * Prints the current executor status to STDERR. If the job provider implements 
+ * Countable also a progress bar is printed.
  */
-require 'job_provider_suite.php';
-require 'executor_suite.php';
-require 'logger_suite.php';
-
-/**
-* Main test suite
-*/
-class Suite extends \PHPUnit_Framework_TestSuite
+class DummyLogger implements Logger
 {
     /**
-     * Basic constructor for test suite
+     * Method called, when the executor run is started
+     *
+     * @param Executor $executor 
+     * @return void
+     */
+    public function startExecutor( Executor $executoar, JobProvider $jobProvider )
+    {
+        // Intentionally do nothing
+    }
+
+    /**
+     * Method called, when all jobs are executed
      * 
      * @return void
      */
-    public function __construct()
+    public function finishedExecutor()
     {
-        parent::__construct();
-        $this->setName( 'Native Job queue' );
-
-        $this->addTestSuite( \njq\Tests\JobProvider\Suite::suite() );
-        $this->addTestSuite( \njq\Tests\Executor\Suite::suite() );
-        $this->addTestSuite( \njq\Tests\Logger\Suite::suite() );
+        // Intentionally do nothing
     }
 
     /**
-     * Return test suite
+     * Method called, when all jobs are executed
      * 
-     * @return prpTestSuite
+     * @return void
      */
-    public static function suite()
+    public function progressJob( $nr )
     {
-        return new Suite( __CLASS__ );
+        // Intentionally do nothing
     }
 }
+
