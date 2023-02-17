@@ -16,14 +16,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with njq; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * @package VCSWrapper
- * @subpackage Core
- * @version $Revision: 954 $
- * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  */
 
-namespace njq;
+namespace Kore\njq;
 
 /*
  * Interface for job providers.
@@ -35,9 +30,9 @@ interface JobProvider
     /**
      * Returns if the job provider has more jobs.
      *
-     * Returns true, if there are more jobs available in the job provider and 
+     * Returns true, if there are more jobs available in the job provider and
      * false, if the ally have been executed already.
-     * 
+     *
      * @return bool
      */
     public function hasJobs();
@@ -45,13 +40,12 @@ interface JobProvider
     /**
      * Get next job from job provider
      *
-     * Get the next job from the job provider. Should return a valid callback, 
+     * Get the next job from the job provider. Should return a valid callback,
      * which will then be called in the forked child.
      *
      * Returns null, if no job is available anymore.
-     * 
+     *
      * @return Callback
      */
     public function getNextJob();
 }
-

@@ -16,45 +16,50 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with njq; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+namespace Kore\njq\Logger;
+
+use Kore\njq\Logger;
+use Kore\njq\Executor;
+use Kore\njq\JobProvider;
+
+/*
+ * CLI logger
  *
- * @package VCSWrapper
- * @subpackage Core
- * @version $Revision: 954 $
- * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
+ * Prints the current executor status to STDERR. If the job provider implements
+ * Countable also a progress bar is printed.
  */
-
-namespace njq\Tests\Executor;
-
-/**
- * Framework tests
- */
-require 'executor/base_tests.php';
-
-/**
-* Executor test suite
-*/
-class Suite extends \PHPUnit_Framework_TestSuite
+class Dummy implements Logger
 {
     /**
-     * Basic constructor for test suite
-     * 
+     * Method called, when the executor run is started
+     *
+     * @param Executor $executor
      * @return void
      */
-    public function __construct()
+    public function startExecutor(Executor $executoar, JobProvider $jobProvider)
     {
-        parent::__construct();
-        $this->setName( 'Shell job executor' );
-
-        $this->addTest( BaseTests::suite() );
+        // Intentionally do nothing
     }
 
     /**
-     * Return test suite
-     * 
-     * @return prpTestSuite
+     * Method called, when all jobs are executed
+     *
+     * @return void
      */
-    public static function suite()
+    public function finishedExecutor()
     {
-        return new Suite( __CLASS__ );
+        // Intentionally do nothing
+    }
+
+    /**
+     * Method called, when all jobs are executed
+     *
+     * @return void
+     */
+    public function progressJob($nr)
+    {
+        // Intentionally do nothing
     }
 }

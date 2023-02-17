@@ -16,112 +16,89 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with njq; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * @package VCSWrapper
- * @subpackage Core
- * @version $Revision: 954 $
- * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  */
 
-namespace njq\Tests\Executor;
+namespace Kore\njq;
+
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for shell job executor
  */
-class BaseTests extends \PHPUnit_Framework_TestCase
+class ExecutorTest extends TestCase
 {
-    /**
-     * Return test suite
-     *
-     * @return PHPUnit_Framework_TestSuite
-     */
-	public static function suite()
-	{
-		return new \PHPUnit_Framework_TestSuite( __CLASS__ );
-	}
-
-    public function tearDown()
+    public function tearDown(): void
     {
-        if ( is_file( 'tmp' ) )
-        {
-            unlink( 'tmp' );
+        if (is_file('tmp')) {
+            unlink('tmp');
         }
-    }
-
-    public function testNoJobs()
-    {
-        $executor = new \njq\Executor();
-        $executor->run(
-            new \njq\ShellJobProvider( array() )
-        );
     }
 
     public function testExecuteSingleJob()
     {
-        $executor = new \njq\Executor();
+        $executor = new Executor();
         $executor->run(
-            new \njq\ShellJobProvider( array(
+            new JobProvider\Shell(array(
                 'echo "1" >> tmp',
-            ) )
+            ))
         );
 
-        $this->assertTrue( file_exists( 'tmp' ) );
+        $this->assertTrue(file_exists('tmp'));
         $this->assertEquals(
             "1\n",
-            file_get_contents( 'tmp' )
+            file_get_contents('tmp')
         );
     }
 
     public function testExecuteMultipleJobs()
     {
-        $executor = new \njq\Executor();
+        $executor = new Executor();
         $executor->run(
-            new \njq\ShellJobProvider( array(
+            new JobProvider\Shell(array(
                 'sleep 1 && echo "2" >> tmp',
                 'echo "1" >> tmp',
-            ) )
+            ))
         );
 
-        $this->assertTrue( file_exists( 'tmp' ) );
+        $this->assertTrue(file_exists('tmp'));
         $this->assertEquals(
             "1\n2\n",
-            file_get_contents( 'tmp' )
+            file_get_contents('tmp')
         );
     }
 
     public function testExecuteMultipleJobsInParallel()
     {
-        $executor = new \njq\Executor();
+        $executor = new Executor();
         $executor->run(
-            new \njq\ShellJobProvider( array(
+            new JobProvider\Shell(array(
                 'echo "1" >> tmp',
                 'sleep 1 && echo "2" >> tmp',
-            ) )
+            ))
         );
 
-        $this->assertTrue( file_exists( 'tmp' ) );
+        $this->assertTrue(file_exists('tmp'));
         $this->assertEquals(
             "1\n2\n",
-            file_get_contents( 'tmp' )
+            file_get_contents('tmp')
         );
     }
 
     public function testExecuteMultipleJobsNonParallel()
     {
-        $executor = new \njq\Executor();
+        $executor = new Executor();
         $executor->run(
-            new \njq\ShellJobProvider( array(
+            new JobProvider\Shell(array(
                 'echo "1" >> tmp',
                 'sleep 1 && echo "2" >> tmp',
-            ) ),
+            )),
             1
         );
 
-        $this->assertTrue( file_exists( 'tmp' ) );
+        $this->assertTrue(file_exists('tmp'));
         $this->assertEquals(
             "2\n1\n",
-            file_get_contents( 'tmp' )
+            file_get_contents('tmp')
         );
     }
 }
-

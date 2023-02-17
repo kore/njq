@@ -1,0 +1,14 @@
+{
+  "name": "kore/njq",
+  "description":  "Native PHP Job Queue",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Kore\\njq\\": ["src/php", "tests/php"]
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.0",
+    "friendsofphp/php-cs-fixer": "^3.14"
+  }
+}

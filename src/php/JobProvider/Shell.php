@@ -16,38 +16,35 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with njq; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * @package VCSWrapper
- * @subpackage Core
- * @version $Revision: 954 $
- * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  */
 
-namespace njq;
+namespace Kore\njq\JobProvider;
+
+use Kore\njq\JobProvider;
 
 /*
  * Shell job provider.
  *
- * Constructed from an array of shell commands, it returns those, to all be 
+ * Constructed from an array of shell commands, it returns those, to all be
  * executed.
  */
-class ShellJobProvider implements JobProvider, \Countable
+class Shell implements JobProvider, \Countable
 {
     /**
-     * Array of shell commands, which are provided by this job provider and 
+     * Array of shell commands, which are provided by this job provider and
      * therefore executed.
-     * 
+     *
      * @var array
      */
     protected $shellCmds = array();
 
     /**
      * Construct from an array of shell commands
-     * 
-     * @param array $shellCmds 
+     *
+     * @param array $shellCmds
      * @return void
      */
-    public function __construct( array $shellCmds )
+    public function __construct(array $shellCmds)
     {
         $this->shellCmds = $shellCmds;
     }
@@ -55,49 +52,46 @@ class ShellJobProvider implements JobProvider, \Countable
     /**
      * Returns if the job provider has more jobs.
      *
-     * Returns true, if there are more jobs available in the job provider and 
+     * Returns true, if there are more jobs available in the job provider and
      * false, if the ally have been executed already.
-     * 
+     *
      * @return bool
      */
     public function hasJobs()
     {
-        return (bool) count( $this->shellCmds );
+        return (bool) count($this->shellCmds);
     }
 
     /**
      * Get next job from job provider
      *
-     * Get the next job from the job provider. Should return a valid callback, 
+     * Get the next job from the job provider. Should return a valid callback,
      * which will then be called in the forked child.
      *
      * Returns null, if no job is available anymore.
-     * 
+     *
      * @return Callback
      */
     public function getNextJob()
     {
-        $command = array_pop( $this->shellCmds );
+        $command = array_pop($this->shellCmds);
 
-        if ( $command === null )
-        {
+        if ($command === null) {
             return null;
         }
 
-        return function() use ( $command )
-        {
-            return shell_exec( $command );
+        return function () use ($command) {
+            return shell_exec($command);
         };
     }
 
     /**
      * Return numer of shell commands
-     * 
+     *
      * @return int
      */
     public function count()
     {
-        return count( $this->shellCmds );
+        return count($this->shellCmds);
     }
 }
-

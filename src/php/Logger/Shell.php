@@ -17,53 +17,51 @@
  * along with njq; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @package VCSWrapper
- * @subpackage Core
- * @version $Revision: 954 $
- * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  */
 
-namespace njq;
+namespace Kore\njq\Logger;
+
+use Kore\njq\Logger;
 
 /*
  * CLI logger
  *
- * Prints the current executor status to STDERR. If the job provider implements 
+ * Prints the current executor status to STDERR. If the job provider implements
  * Countable also a progress bar is printed.
  */
 class ShellLogger implements Logger
 {
     /**
      * Number of jobs to execute
-     * 
+     *
      * @var int
      */
     protected $count;
 
     /**
      * Stream to write to
-     * 
+     *
      * @var resource
      */
     protected $stream;
 
     /**
      * Print ETA
-     * 
+     *
      * @var bool
      */
     protected $printEta;
 
     /**
      * Starting time of the executor
-     * 
+     *
      * @var float
      */
     protected $started;
 
     /**
      * Visual process indicators
-     * 
+     *
      * @var array
      */
     protected $processIndicators = array( '|', '/', '-', '\\' );
@@ -72,11 +70,11 @@ class ShellLogger implements Logger
      * Construct from output stream to write to
      *
      * Defaults to STDERR.
-     * 
-     * @param resource $output 
+     *
+     * @param resource $output
      * @return void
      */
-    public function __construct( $output = STDERR, $printEta = false )
+    public function __construct($output = STDERR, $printEta = false)
     {
         $this->stream   = $output;
         $this->printEta = (bool) $printEta;
@@ -85,71 +83,69 @@ class ShellLogger implements Logger
     /**
      * Method called, when the executor run is started
      *
-     * @param Executor $executor 
+     * @param Executor $executor
      * @return void
      */
-    public function startExecutor( Executor $executoar, JobProvider $jobProvider )
+    public function startExecutor(Executor $executoar, JobProvider $jobProvider)
     {
-        if ( $jobProvider instanceof \Countable )
-        {
-            $this->count = count( $jobProvider );
+        if ($jobProvider instanceof \Countable) {
+            $this->count = count($jobProvider);
         }
 
-        $this->started = microtime( true );
+        $this->started = microtime(true);
     }
 
     /**
      * Method called, when all jobs are executed
-     * 
+     *
      * @return void
      */
     public function finishedExecutor()
     {
-        fwrite( $this->stream, "\n" );
+        fwrite($this->stream, "\n");
     }
 
     /**
      * Method called, when all jobs are executed
-     * 
+     *
      * @return void
      */
-    public function progressJob( $nr )
+    public function progressJob($nr)
     {
-        if ( $this->count )
-        {
-            \fwrite( $this->stream, \sprintf( "   \r% 4d / %d (% 2.2F%%) %s %s  ",
+        if ($this->count) {
+            \fwrite($this->stream, \sprintf(
+                "   \r% 4d / %d (% 2.2F%%) %s %s  ",
                 $nr,
                 $this->count,
                 $nr / $this->count * 100,
-                $this->processIndicators[$nr % count( $this->processIndicators )],
-                ( !$this->printEta ? '' : $this->getEta( $nr ) )
-            ) );
-        }
-        else
-        {
-            \fwrite( $this->stream, \sprintf( "   \r% 4d %s   ",
+                $this->processIndicators[$nr % count($this->processIndicators)],
+                (!$this->printEta ? '' : $this->getEta($nr))
+            ));
+        } else {
+            \fwrite($this->stream, \sprintf(
+                "   \r% 4d %s   ",
                 $nr,
-                $this->processIndicators[$nr % count( $this->processIndicators )]
-            ) );
+                $this->processIndicators[$nr % count($this->processIndicators)]
+            ));
         }
     }
 
     /**
      * Return nicely formatted ETA
-     * 
-     * @param int $nr 
+     *
+     * @param int $nr
      * @return string
      */
-    protected function getEta( $nr )
+    protected function getEta($nr)
     {
-        $timePassed       = microtime( true ) - $this->started;
+        $timePassed       = microtime(true) - $this->started;
         $percentCompleted = $nr / $this->count;
-        $secondsRequired  = $timePassed / $percentCompleted * ( 1 - $percentCompleted );
+        $secondsRequired  = $timePassed / $percentCompleted * (1 - $percentCompleted);
 
-        return sprintf( 'ETA: % 2d.%02dm',
-            floor( $secondsRequired / 60 ),
+        return sprintf(
+            'ETA: % 2d.%02dm',
+            floor($secondsRequired / 60),
             $secondsRequired % 60
         );
     }
 }
-

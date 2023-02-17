@@ -23,38 +23,44 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  */
 
-namespace njq\Tests\Logger;
+namespace Kore\njq\JobProvider;
+
+use PHPUnit\Framework\TestCase;
 
 /**
- * Framework tests
+ * Tests for shell job provider
  */
-require 'logger/shell_tests.php';
-
-/**
-* Executor test suite
-*/
-class Suite extends \PHPUnit_Framework_TestSuite
+class ShellTest extends TestCase
 {
-    /**
-     * Basic constructor for test suite
-     * 
-     * @return void
-     */
-    public function __construct()
+    public function testNoJobs()
     {
-        parent::__construct();
-        $this->setName( 'Shell job logger' );
-
-        $this->addTest( ShellTests::suite() );
+        $provider = new Shell(array());
+        $this->assertFalse($provider->hasJobs());
     }
 
-    /**
-     * Return test suite
-     * 
-     * @return prpTestSuite
-     */
-    public static function suite()
+    public function testNoJobsGetJob()
     {
-        return new Suite( __CLASS__ );
+        $provider = new Shell(array());
+        $this->assertNull($provider->getNextJob());
+    }
+
+    public function testGetSingleJob()
+    {
+        $provider = new Shell(array( 'echo 1' ));
+        $this->assertTrue($provider->hasJobs());
+
+        $job = $provider->getNextJob();
+
+        $this->assertFalse($provider->hasJobs());
+    }
+
+    public function testExecuteShellJob()
+    {
+        $provider = new Shell(array( 'echo "Hello world!"' ));
+        $job = $provider->getNextJob();
+        $this->assertSame(
+            "Hello world!\n",
+            call_user_func($job)
+        );
     }
 }

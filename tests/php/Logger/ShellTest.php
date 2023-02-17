@@ -23,28 +23,30 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  */
 
-namespace njq\Tests\Logger;
+namespace Kore\njq\Logger;
 
-class DummyJobProvider implements \njq\JobProvider
+use PHPUnit\Framework\TestCase;
+use Kore\njq\Executor;
+use Kore\njq\JobProvider;
+
+class DummyJobProvider implements JobProvider
 {
     protected $jobs = array( 1, 2, 3 );
 
     public function hasJobs()
     {
-        return (bool) count( $this->jobs );
+        return (bool) count($this->jobs);
     }
 
     public function getNextJob()
     {
-        $command = array_pop( $this->jobs );
+        $command = array_pop($this->jobs);
 
-        if ( $command === null )
-        {
+        if ($command === null) {
             return null;
         }
 
-        return function()
-        {
+        return function () {
             return null;
         };
     }
@@ -53,107 +55,95 @@ class DummyJobProvider implements \njq\JobProvider
 /**
  * Tests for shell job executor
  */
-class ShellTests extends \PHPUnit_Framework_TestCase
+class ShellTests extends TestCase
 {
-    /**
-     * Return test suite
-     *
-     * @return PHPUnit_Framework_TestSuite
-     */
-	public static function suite()
-	{
-		return new \PHPUnit_Framework_TestSuite( __CLASS__ );
-	}
-
-    public function tearDown()
+    public function tearDown(): void
     {
-        if ( is_file( 'tmp' ) )
-        {
-            unlink( 'tmp' );
+        if (is_file('tmp')) {
+            unlink('tmp');
         }
     }
 
     public function testNoJobs()
     {
-        $fp = fopen( 'tmp', 'w' );
+        $fp = fopen('tmp', 'w');
 
-        $executor = new \njq\Executor(
-            new \njq\ShellLogger( $fp )
+        $executor = new Executor(
+            new Shell($fp)
         );
         $executor->run(
-            new \njq\ShellJobProvider( array() )
+            new JobProvider\Shell(array())
         );
-        fclose( $fp );
+        fclose($fp);
 
         $this->assertEquals(
             "\n",
-            file_get_contents( 'tmp' )
+            file_get_contents('tmp')
         );
     }
 
     public function testExecuteSingleJob()
     {
-        $fp = fopen( 'tmp', 'w' );
+        $fp = fopen('tmp', 'w');
 
-        $executor = new \njq\Executor(
-            new \njq\ShellLogger( $fp )
+        $executor = new Executor(
+            new Shell($fp)
         );
         $executor->run(
-            new \njq\ShellJobProvider( array(
+            new JobProvider\Shell(array(
                 'echo "1"',
-            ) )
+            ))
         );
-        fclose( $fp );
+        fclose($fp);
 
         $this->assertEquals(
             "   \r   1 / 1 (100.00%) /   " .
             "\n",
-            file_get_contents( 'tmp' )
+            file_get_contents('tmp')
         );
     }
 
     public function testExecuteMultipleJobs()
     {
-        $fp = fopen( 'tmp', 'w' );
+        $fp = fopen('tmp', 'w');
 
-        $executor = new \njq\Executor(
-            new \njq\ShellLogger( $fp )
+        $executor = new Executor(
+            new Shell($fp)
         );
         $executor->run(
-            new \njq\ShellJobProvider( array(
+            new JobProvider\Shell(array(
                 'echo "1"',
                 'echo "2"',
                 'echo "3"',
-            ) )
+            ))
         );
-        fclose( $fp );
+        fclose($fp);
 
         $this->assertEquals(
             "   \r   1 / 3 (33.33%) /   " .
             "   \r   2 / 3 (66.67%) -   " .
             "   \r   3 / 3 (100.00%) \\   " .
             "\n",
-            file_get_contents( 'tmp' )
+            file_get_contents('tmp')
         );
     }
 
     public function testExecuteNonCountableJobProvider()
     {
-        $fp = fopen( 'tmp', 'w' );
+        $fp = fopen('tmp', 'w');
 
-        $executor = new \njq\Executor(
-            new \njq\ShellLogger( $fp )
+        $executor = new Executor(
+            new Shell($fp)
         );
-        $executor->run( new DummyJobProvider() );
-        fclose( $fp );
+        $executor->run(new DummyJobProvider());
+        fclose($fp);
 
         $this->assertEquals(
             "   \r   1 /   " .
             "   \r   2 -   " .
             "   \r   3 \\   " .
             "\n",
-            file_get_contents( 'tmp' )
+            file_get_contents('tmp')
         );
     }
 }
-
