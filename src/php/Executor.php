@@ -45,7 +45,7 @@ class Executor
      * @param Logger $logger
      * @return void
      */
-    public function __construct(Logger $logger = null)
+    public function __construct(?Logger $logger = null)
     {
         $this->logger = $logger === null ? new Logger\Dummy() : $logger;
     }
